@@ -1,3 +1,10 @@
+"""
+Лабораторная работа 1 по ЛОИС.
+Вариант 2 (Импликация Гогена)
+Выполнили Евегений Самохвал, Вячеслав Свяцкий и Иван Титлов.
+Дата выполнения: 03.10.2023
+"""
+
 import input_validator
 
 def user_input_to_array(user_input: str):
@@ -9,7 +16,7 @@ def user_input_to_array(user_input: str):
 def get_set():
     user_input_set_1 = input('Введите нечёткое множество в формате a|0.5, b|0.4 ...\n')
     while True:
-        if input_validator.input_check_with_regex(user_input_set_1):
+        if input_validator.input_check(user_input_set_1):
             processed_set_1 = user_input_to_array(user_input_set_1)
             break
         else:
@@ -17,7 +24,7 @@ def get_set():
     print(processed_set_1)
     return processed_set_1
 
-
+# Implication rule
 def table_construction(starting_set_1, starting_set_2):
     result_table = [[] for pair in starting_set_1]
     for pair_x in range(len(starting_set_1)):
