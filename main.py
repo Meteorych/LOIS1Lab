@@ -5,22 +5,34 @@
 Дата выполнения: 03.10.2023
 """
 
+#A)a|0.5, b|0.6
+#B)c|0.3, d|0.7
+#A~>B
+
 import input_validator
 
 def user_input_to_array(user_input: str):
+    name_buffer = ""
+    for sign in user_input:
+        name_buffer+=sign
+        if sign == ')':
+            break
+    user_input = user_input.removeprefix(name_buffer)
+    name_buffer: str
+    name_buffer = name_buffer.removesuffix(')')
     starting_array = user_input.split(', ')
     divided_elements_array = [pair.split('|') for pair in starting_array]
-    return [[pair[0], float(pair[1])] for pair in divided_elements_array]
+    return [name_buffer, [[pair[0], float(pair[1])] for pair in divided_elements_array]]
 
 
 def get_set():
-    user_input_set_1 = input('Введите нечёткое множество в формате a|0.5, b|0.4 ...\n')
-    while True:
-        if input_validator.input_check(user_input_set_1):
-            processed_set_1 = user_input_to_array(user_input_set_1)
-            break
-        else:
-            user_input_set_1 = input("Неправильный формат нечёткого множества")
+    user_input_set_1 = input('Введите нечёткое множество в формате A)a|0.5, b|0.4 ...\n')
+    #while True:
+        #if input_validator.input_check(user_input_set_1):
+    processed_set_1 = user_input_to_array(user_input_set_1)
+        #break
+        #else:
+        #    user_input_set_1 = input("Неправильный формат нечёткого множества")
     print(processed_set_1)
     return processed_set_1
 
@@ -46,21 +58,66 @@ def table_solver(x_y_table):
                       max(processed_table[max_possibility])] for max_possibility in range(len(processed_table))]
     return resulting_set
 
+def divide_name_set(starting_sets):
+    list_of_names = []
+    list_of_sets = dict()
+    for pair in starting_sets:
+        list_of_names.append(pair[0])
+        list_of_sets[pair[0]] = pair[1]
+    return list_of_sets, list_of_names
+
+def rule_to_machine(user_rule):
+    result = ""
+    for sign in range(len(user_rule)):
+        if user_rule[sign] == '~':
+            result+="@"
+        elif user_rule[sign] == '>':
+            pass
+        else:
+            result+=user_rule[sign]
+    return result
+
+def postfix_writing(poland_writing, list_of_names):
+    result = []
+    stack = []
+    for sign in poland_writing:
+        if list_of_names.count(sign):
+            result.append(sign)
+        elif sign == '@' or sign == '(':
+            stack.append(sign)
+        elif sign == ')':
+            while stack[0] != ')':
+                result.append(stack.pop(0))
+            stack.pop(0)
+    while len(stack):
+         result.append(stack.pop(0))
+    return result
+
+
+
+def get_rule(list_of_names):
+    machine_version = rule_to_machine(input("Введите правило в формате C~>(A~>B)\n"))
+    return postfix_writing(machine_version, list_of_names)
+
+def use_rule(postfix_rule, dict_of_sets, list_of_names):
+    stack = []
+    for sign in postfix_rule:
+        if sign in list_of_names:
+            stack.insert(0, dict_of_sets.get(sign))
+        else:
+            solution = table_solver([stack[1], stack[0], table_construction(stack[1], stack[0])])
+            stack.pop(0)
+            stack.pop(0)
+            stack.insert(0, solution)
+    return  stack[0]
 
 def main():
     cycle = 'Да'
     while cycle == 'Да':
         number_of_sets = int(input("Введите количество посылок: \n"))
-        starting_sets = [get_set() for current_set in range(number_of_sets)]
-        all_tables = []
-        for set_x in starting_sets:
-            for set_y in starting_sets:
-                if set_x != set_y:
-                    temp_sets_array = [set_x, set_y, table_construction(set_x, set_y)]
-                    if all_tables.count(temp_sets_array) == 0:
-                        all_tables.append(temp_sets_array)
-        for table in all_tables:
-            print("Вывод: \n", table_solver(table))
+        starting_sets, list_of_names = divide_name_set([get_set() for current_set in range(number_of_sets)])
+        rule = get_rule(list_of_names)
+        print(use_rule(rule, starting_sets, list_of_names))
         cycle = input('Продолжить?\n')
 
 
