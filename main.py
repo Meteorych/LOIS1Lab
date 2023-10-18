@@ -7,9 +7,11 @@
 
 #A)a|0.5, b|0.6
 #B)c|0.3, d|0.7
+#C)e|0.1, f|0.8
 #A~>B
 
 import input_validator
+import prettytable
 
 def user_input_to_array(user_input: str):
     name_buffer = ""
@@ -45,6 +47,9 @@ def table_construction(starting_set_1, starting_set_2):
                 result_table[pair_x].append(1)
             else:
                 result_table[pair_x].append(starting_set_2[pair_y][1])
+    table_view = prettytable.PrettyTable()
+    table_view.add_rows(result_table)
+    print(table_view)
     return result_table
 
 
@@ -54,8 +59,16 @@ def table_solver(x_y_table):
         processed_table.append([])
         for table_sign in range(len(x_y_table[2][0])):
             processed_table[set_x_sign].append(x_y_table[0][set_x_sign][1] * x_y_table[2][set_x_sign][table_sign])
-    resulting_set = [[x_y_table[1][max_possibility][0],
-                      max(processed_table[max_possibility])] for max_possibility in range(len(processed_table))]
+    table_view = prettytable.PrettyTable()
+    table_view.add_rows(processed_table)
+    print(table_view)
+    list_of_max = []
+    for collumn in range(len(processed_table[0])):
+        temp_container = []
+        for row in range(len(processed_table)):
+            temp_container.append(processed_table[row][collumn])
+        list_of_max.append(max(temp_container))
+    resulting_set = [[x_y_table[1][max_possibility][0], list_of_max[max_possibility]] for max_possibility in range(len(list_of_max))]
     return resulting_set
 
 def divide_name_set(starting_sets):
@@ -84,9 +97,9 @@ def postfix_writing(poland_writing, list_of_names):
         if list_of_names.count(sign):
             result.append(sign)
         elif sign == '@' or sign == '(':
-            stack.append(sign)
+            stack.insert(0, sign)
         elif sign == ')':
-            while stack[0] != ')':
+            while stack[0] != '(':
                 result.append(stack.pop(0))
             stack.pop(0)
     while len(stack):
@@ -116,8 +129,10 @@ def main():
     while cycle == 'Да':
         number_of_sets = int(input("Введите количество посылок: \n"))
         starting_sets, list_of_names = divide_name_set([get_set() for current_set in range(number_of_sets)])
-        rule = get_rule(list_of_names)
-        print(use_rule(rule, starting_sets, list_of_names))
+        number_of_rules = int(input("Введите количество правил\n"))
+        for i in range(number_of_rules):
+            rule = get_rule(list_of_names)
+            print(use_rule(rule, starting_sets, list_of_names))
         cycle = input('Продолжить?\n')
 
 
