@@ -30,7 +30,7 @@ def user_input_to_array(user_input: str):
 def get_set():
     user_input_set_1 = input('Введите нечёткое множество в формате A)a|0.5, b|0.4 ...\n')
     if input_validator.input_check(user_input_set_1) is False:
-        raise ValueError("Wrong format!")
+        raise ValueError("Неправильный формат!")
     processed_set_1 = user_input_to_array(user_input_set_1)
         #break
         #else:
@@ -109,7 +109,11 @@ def postfix_writing(poland_writing, list_of_names):
 
 
 def get_rule(list_of_names):
-    machine_version = rule_to_machine(input("Введите правило в формате C~>(A~>B)\n"))
+    rule = (input("Введите правило в формате C~>(A~>B)\n"))
+    if not input_validator.input_rule_check(rule):
+        return ValueError
+    else:
+        machine_version = rule_to_machine(rule)
     return postfix_writing(machine_version, list_of_names)
 
 def use_rule(postfix_rule, dict_of_sets, list_of_names):
@@ -127,18 +131,18 @@ def use_rule(postfix_rule, dict_of_sets, list_of_names):
 def main():
     cycle = 'Да'
     while cycle == 'Да':
-        number_of_sets = int(input("Введите количество посылок: \n"))
+        number_of_sets = int(input("Введите количество посылок: "))
         try:
             starting_sets, list_of_names = divide_name_set([get_set() for current_set in range(number_of_sets)])
         except ValueError:
             continue
-        number_of_rules = int(input("Введите количество правил\n"))
+        number_of_rules = int(input("\nВведите количество правил: "))
         for i in range(number_of_rules):
             try:
                 rule = get_rule(list_of_names)
+                print(use_rule(rule, starting_sets, list_of_names))
             except ValueError:
                 continue
-            print(use_rule(rule, starting_sets, list_of_names))
         cycle = input('Продолжить?\n')
 
 
