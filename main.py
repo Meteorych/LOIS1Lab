@@ -41,10 +41,11 @@ def user_input_to_array(user_input: str):
 
 
 def get_set():
-    user_input_set_1 = input('Введите нечёткое множество в формате A={(a, 0.5), (b, 0.4)} ...\n')
-    #if input_validator.input_check(user_input_set_1) is False:
-    #    raise ValueError("Неправильный формат!")
-    processed_set_1 = user_input_to_array(user_input_set_1)
+    user_input_set_1 = input('Введите нечёткое множество в формате A)a|0.5, b|0.4 ...\n')
+    while True:
+        if input_validator.input_check(user_input_set_1):
+            processed_set_1 = user_input_to_array(user_input_set_1)
+            break
     print(processed_set_1)
     return processed_set_1
 
@@ -52,8 +53,11 @@ def get_set():
 def table_construction(starting_set_1, starting_set_2):
     result_table = [[] for pair in starting_set_1]
     for pair_x in range(len(starting_set_1)):
-        for pair_y in range(len(starting_set_2)):
-            result_table[pair_x].append(min(starting_set_2[pair_y][1]/starting_set_1[pair_x][1], 1))
+        for pair_y in range(len(starting_set_2)) :
+            if starting_set_1[pair_x][1] < starting_set_2[pair_y][1]:
+                result_table[pair_x].append(1)
+            else:
+                result_table[pair_x].append(starting_set_2[pair_y][1])
     table_view = prettytable.PrettyTable()
     table_view.add_rows(result_table)
     print(table_view)
@@ -116,11 +120,7 @@ def postfix_writing(poland_writing, list_of_names):
 
 
 def get_rule(list_of_names):
-    rule = (input("Введите правило в формате A~>B\n"))
-    if not input_validator.input_rule_check(rule):
-        return ValueError
-    else:
-        machine_version = rule_to_machine(rule)
+    machine_version = rule_to_machine(input("Введите правило в формате C~>(A~>B)\n"))
     return postfix_writing(machine_version, list_of_names)
 
 def use_rule(postfix_rule, dict_of_sets, list_of_names):
