@@ -30,22 +30,24 @@ def user_input_to_array(user_input: str):
         match sign:
             case '(': pass
             case ' ': pass
-            case ',': temp_string+=','
+            case ',': temp_string += ','
             case ')':
                 divided_elements_array.append(temp_string.removeprefix(','))
                 temp_string = ''
             case _:
-                temp_string+=sign
+                temp_string += sign
     divided_elements_array = [pair.split(',') for pair in divided_elements_array]
     return [name_buffer, [[pair[0], float(pair[1])] for pair in divided_elements_array]]
 
 
 def get_set():
-    user_input_set_1 = input('Введите нечёткое множество в формате A)a|0.5, b|0.4 ...\n')
     while True:
+        user_input_set_1 = input('Введите нечёткое множество в формате A={(a, 0.5), (b, 0.6)} ...\n')
         if input_validator.input_check(user_input_set_1):
             processed_set_1 = user_input_to_array(user_input_set_1)
             break
+        else:
+            print("Неправильный ввод")
     print(processed_set_1)
     return processed_set_1
 
@@ -120,8 +122,12 @@ def postfix_writing(poland_writing, list_of_names):
 
 
 def get_rule(list_of_names):
-    machine_version = rule_to_machine(input("Введите правило в формате C~>(A~>B)\n"))
-    return postfix_writing(machine_version, list_of_names)
+    rule = (input("Введите правило в формате A~>B\n"))
+    if not input_validator.input_rule_check(rule):
+        print("Неправильный формат")
+    else:
+        machine_version = rule_to_machine(rule)
+        return postfix_writing(machine_version, list_of_names)
 
 def use_rule(postfix_rule, dict_of_sets, list_of_names):
     stack = []
@@ -148,7 +154,7 @@ def main():
             try:
                 rule = get_rule(list_of_names)
                 print(use_rule(rule, starting_sets, list_of_names))
-            except ValueError:
+            except BaseException:
                 continue
         cycle = input('Продолжить?\n')
 
