@@ -14,6 +14,8 @@ import input_validator
 LatinAlphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
                  "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 
+layers = []
+
 
 def user_input_to_array(user_input: str):
     name_buffer = ""
@@ -66,7 +68,7 @@ def table_construction(starting_set_1, starting_set_2):
                 min(starting_set_2[pair_y][1]/starting_set_1[pair_x][1], 1))
     table_view = prettytable.PrettyTable()
     table_view.add_rows(result_table)
-    print(table_view)
+    layers[len(layers)-2].append(table_view)
     return result_table
 
 
@@ -79,7 +81,7 @@ def table_solver(x_y_table):
                 x_y_table[0][set_x_sign][1] * x_y_table[2][set_x_sign][table_sign])
     table_view = prettytable.PrettyTable()
     table_view.add_rows(processed_table)
-    print(table_view)
+    layers[len(layers)-1].append(table_view)
     list_of_max = []
     for column in range(len(processed_table[0])):
         temp_container = []
@@ -161,6 +163,8 @@ def main():
     except ValueError:
         pass
     while cycle == 'Да':
+        layers.append([])
+        layers.append([])
         number_of_rules = int(input("\nВведите количество правил: "))
         for i in range(number_of_rules):
             try:
@@ -171,11 +175,19 @@ def main():
                         list_of_names.append(sign)
                         print(sign)
                         break
-                starting_sets.append(result)
+                starting_sets[list_of_names[-1]] = result
                 print(result)
             except BaseException:
                 continue
         cycle = input('Продолжить?\n')
+    print(end=' ', sep=' ')
+    counter = 0
+    for layer in layers:
+        print(f"Layer {counter}")
+        for table in layer:
+            print(table)
+        print('\n')
+        counter += 1
 
 
 if __name__ == '__main__':
