@@ -9,9 +9,10 @@
 # B={(c, 0.3), (d, 0.7)}
 # C={(e, 0.1), (f, 0.8)}
 # A~>B
-
-import input_validator
 import prettytable
+import input_validator
+LatinAlphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
+                 "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 
 
 def user_input_to_array(user_input: str):
@@ -153,18 +154,25 @@ def use_rule(postfix_rule, dict_of_sets, list_of_names):
 
 def main():
     cycle = 'Да'
+    number_of_sets = int(input("Введите количество посылок: "))
+    try:
+        starting_sets, list_of_names = divide_name_set(
+            [get_set() for current_set in range(number_of_sets)])
+    except ValueError:
+        pass
     while cycle == 'Да':
-        number_of_sets = int(input("Введите количество посылок: "))
-        try:
-            starting_sets, list_of_names = divide_name_set(
-                [get_set() for current_set in range(number_of_sets)])
-        except ValueError:
-            continue
         number_of_rules = int(input("\nВведите количество правил: "))
         for i in range(number_of_rules):
             try:
                 rule = get_rule(list_of_names)
-                print(use_rule(rule, starting_sets, list_of_names))
+                result = use_rule(rule, starting_sets, list_of_names)
+                for sign in LatinAlphabet:
+                    if not (sign in list_of_names):
+                        list_of_names.append(sign)
+                        print(sign)
+                        break
+                starting_sets.append(result)
+                print(result)
             except BaseException:
                 continue
         cycle = input('Продолжить?\n')
